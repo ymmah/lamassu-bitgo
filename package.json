@@ -1,0 +1,26 @@
+{
+  "name": "lamassu-bitgo",
+  "version": "0.1.0",
+  "description": "Lamassu BitGo module",
+  "main": "wallet.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lamassu/lamassu-bitgo.git"
+  },
+  "keywords": [
+    "Lamassu",
+    "BitGo",
+    "Bitcoin"
+  ],
+  "author": "BitGo (https://www.bitgo.com/)",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/lamassu/lamassu-bitgo/issues"
+  },
+  "devDependencies": {
+  },
+  "dependencies": {
+    "bitgo": "0.9.12",
+    "lodash": "^2.4.1"
+  }
+}
