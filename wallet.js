@@ -48,7 +48,7 @@ exports.sendBitcoins = function sendBitcoins(address, satoshis, fee, callback) {
 };
 
 exports.balance = function balance(callback) {
-  return bitgo.wallets.get({ walletId: pluginConfig.walletId })
+  return bitgo.wallets().get({ id: pluginConfig.walletId })
   .then(function(wallet) {
     return {
       BTC: wallet.confirmedBalance()
