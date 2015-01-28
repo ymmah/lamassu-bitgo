@@ -25,16 +25,16 @@ exports.config = function config(localConfig) {
 };
 
 exports.sendBitcoins = function sendBitcoins(address, satoshis, fee, callback) {
-  var wallet = bitgo.newWalletObject({ id: pluginConfig.walletId });
-
-  var params = {
-    address: address,
-    amount: satoshis,
-    fee: fee,  // TODO: support fee in sendCoins
-    walletPassphrase: pluginConfig.walletPassphrase
-  };
-
-  return wallet.sendCoins(params)
+  return bitgo.wallets().get({ id: pluginConfig.walletId })
+  .then(function(wallet) {
+    var params = {
+      address: address,
+      amount: satoshis,
+      // fee: fee,  // TODO: support fee in sendCoins
+      walletPassphrase: pluginConfig.walletPassphrase
+    };
+    return wallet.sendCoins(params);
+  })
   .then(function(result) {
     return result.hash;
   })
