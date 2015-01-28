@@ -16,7 +16,7 @@ exports.config = function config(localConfig) {
   if (localConfig) {
     _.merge(pluginConfig, localConfig);
   }
-  if (pluginConfig.token && pluginConfig.wallet && pluginConfig.walletPassphrase) {
+  if (pluginConfig.token && pluginConfig.walletId && pluginConfig.walletPassphrase) {
     bitgo = new bitgolib.BitGo({ env: 'prod' });
     bitgo._token = pluginConfig.token;
   } else {
