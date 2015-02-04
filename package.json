@@ -20,7 +20,7 @@
   "devDependencies": {
   },
   "dependencies": {
-    "bitgo": "0.9.12",
+    "bitgo": "0.9.21",
     "lodash": "^2.4.1"
   }
 }

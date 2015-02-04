@@ -12,6 +12,10 @@ var pluginConfig = {
 
 var bitgo;
 
+var getWallet = function() {
+  return bitgo.wallets().get({ id: pluginConfig.walletId });
+};
+
 exports.config = function config(localConfig) {
   if (localConfig) {
     _.merge(pluginConfig, localConfig);
@@ -25,7 +29,7 @@ exports.config = function config(localConfig) {
 };
 
 exports.sendBitcoins = function sendBitcoins(address, satoshis, fee, callback) {
-  return bitgo.wallets().get({ id: pluginConfig.walletId })
+  return getWallet()
   .then(function(wallet) {
     var params = {
       address: address,
@@ -48,7 +52,7 @@ exports.sendBitcoins = function sendBitcoins(address, satoshis, fee, callback) {
 };
 
 exports.balance = function balance(callback) {
-  return bitgo.wallets().get({ id: pluginConfig.walletId })
+  return getWallet()
   .then(function(wallet) {
     return {
       BTC: wallet.confirmedBalance()
@@ -58,21 +62,19 @@ exports.balance = function balance(callback) {
 };
 
 exports.newAddress = function newAddress(info, callback) {
-  var walletId = pluginConfig.walletId;
-  var wallet = bitgo.newWalletObject({ id: walletId });
   var address;
+  var wallet;
 
-  return wallet.createAddress()
+  return getWallet()
+  .then(function(result) {
+    wallet = result;
+    return wallet.createAddress();
+  })
   .then(function(result) {
     address = result.address;
-
     // If a label was provided, set the label
     if (info.label) {
-      // TODO: replace with SDK label API
-      var url = bitgo.url('/labels/' + walletId + '/' + address);
-      return self.bitgo.put(url)
-      .send({ label: info.label.toString() })
-      .result();
+      return wallet.setLabel({ address: address, label: info.label });
     }
   })
   .then(function() {
