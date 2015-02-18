@@ -1,0 +1,39 @@
+'use strict';
+
+var LamassuConfig = require('lamassu-config');
+var promptly = require('promptly');
+
+var config = new LamassuConfig();
+
+console.log('\nSetting up the BitGo wallet plugin.\n');
+console.log('Please enter your API credentials.\n');
+promptly.prompt('Token: ', function(tokenErr, token) {
+  promptly.prompt('Wallet ID: ', function(walletIdErr, walletId) {
+    promptly.password('Wallet Passphrase: ', function(walletPassphraseErr, walletPassphrase) {
+      updateDb(token, walletId, walletPassphrase, function(err) {
+        if (err) throw err;
+        console.log('\nSuccess.');
+      });
+    });
+  });
+});
+
+function updateDb(token, walletId, walletPassphrase, callback) {
+  var newConfig = {
+    exchanges: {
+      plugins: {
+        settings: {
+          bitgo: {
+            token: token,
+            walletId: walletId,
+            walletPassphrase: walletPassphrase
+          }
+        },
+        current: {
+          transfer: 'bitgo'
+        }
+      }
+    }
+  };
+  config.mergeConfig(newConfig, callback);
+}
