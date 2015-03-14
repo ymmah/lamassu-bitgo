@@ -17,6 +17,9 @@
   "bugs": {
     "url": "https://github.com/lamassu/lamassu-bitgo/issues"
   },
+  "bin": {
+    "setup": "./setup"
+  },
   "devDependencies": {
   },
   "dependencies": {
