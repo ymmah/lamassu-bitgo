@@ -1,6 +1,6 @@
 {
   "name": "lamassu-bitgo",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Lamassu BitGo module",
   "main": "wallet.js",
   "repository": {
@@ -18,7 +18,7 @@
     "url": "https://github.com/lamassu/lamassu-bitgo/issues"
   },
   "bin": {
-    "setup": "./setup"
+    "bitgo-setup": "./setup"
   },
   "devDependencies": {
   },
