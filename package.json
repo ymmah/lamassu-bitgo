@@ -1,6 +1,6 @@
 {
   "name": "lamassu-bitgo",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Lamassu BitGo module",
   "main": "wallet.js",
   "repository": {
@@ -22,7 +22,7 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "bitgo": "0.9.21",
+    "bitgo": "0.11.22",
     "lodash": "^2.4.1",
     "promptly": "~0.2.0",
     "lamassu-config": "~1.0.0"
