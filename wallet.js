@@ -1,5 +1,7 @@
 var _ = require('lodash');
 var bitgolib = require('bitgo');
+var pjson = require('./package.json');
+var userAgent = "Lamassu-BitGo/" + pjson.version;
 
 exports.NAME = 'BitGo';
 exports.SUPPORTED_MODULES = ['wallet'];
@@ -21,7 +23,7 @@ exports.config = function config(localConfig) {
     _.merge(pluginConfig, localConfig);
   }
   if (pluginConfig.token && pluginConfig.walletId && pluginConfig.walletPassphrase) {
-    bitgo = new bitgolib.BitGo({ env: 'prod' });
+    bitgo = new bitgolib.BitGo({ env: 'prod', userAgent: userAgent });
     bitgo._token = pluginConfig.token;
   } else {
     throw new Error('BitGo config requires token and walletId');
