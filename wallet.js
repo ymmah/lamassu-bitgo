@@ -57,7 +57,7 @@ exports.balance = function balance(callback) {
   return getWallet()
   .then(function(wallet) {
     return {
-      BTC: wallet.balance()
+      BTC: wallet.spendableBalance()
     };
   })
   .nodeify(callback);
