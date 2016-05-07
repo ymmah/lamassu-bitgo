@@ -2,6 +2,7 @@ var _ = require('lodash')
 var bitgolib = require('bitgo')
 var pjson = require('./package.json')
 var userAgent = 'Lamassu-BitGo/' + pjson.version
+var BigNumber = require('bignumber.js')
 
 exports.NAME = 'BitGo'
 exports.SUPPORTED_MODULES = ['wallet']
@@ -83,4 +84,58 @@ exports.newAddress = function newAddress (info, callback) {
       return address
     })
     .nodeify(callback)
+}
+
+function compareTxs (a, b) {
+  if (a.instant && b.instant) return 0
+  if (a.instant) return -1
+  if (b.instant) return 1
+  if (!a.pending && !b.pending) return 0
+  if (!a.pending) return -1
+  if (!b.pending) return 1
+  return 0
+}
+
+exports.getStatus = function getStatus (requestedTx, callback) {
+  var toAddress = requestedTx.toAddress
+  return bitgo.blockchain().getAddressTransactions({address: toAddress})
+  .then(function (rec) {
+    var txs = rec.transactions
+    if (txs.length === 0) return callback(null, {status: 'not_seen'})
+
+    var requested = rec.cryptoAtoms
+
+    return getWallet
+    .then(function (wallet) {
+      var promises = txs.map(function (tx) {
+        return wallet.getTransaction({id: tx.id})
+      })
+
+      return Promise.all(promises)
+      .then(function (res) {
+        var sorted = res.sort(compareTxs)
+
+        var reduction = sorted.reduce(function (acc, tx) {
+          if (acc.total.gte(requested)) return acc
+
+          var entry = tx.entries.find(function (_entry) {
+            return _entry.account === toAddress
+          })
+
+          if (!entry) return acc
+          var total = acc.total.plus(entry.value)
+
+          var status = tx.instant
+          ? 'authorized'
+          : tx.pending ? 'zeroConf' : 'confirmed'
+
+          return ({total: total, status: status})
+        }, {total: new BigNumber(0)})
+
+        if (reduction.total.lt(requested)) return {status: 'insufficientFunds'}
+        return {status: reduction.status}
+      })
+    })
+  })
+  .nodeify(callback)
 }
