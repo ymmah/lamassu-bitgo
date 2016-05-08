@@ -96,19 +96,23 @@ function compareTxs (a, b) {
   return 0
 }
 
-exports.getStatus = function getStatus (requestedTx, callback) {
-  var toAddress = requestedTx.toAddress
+exports.getStatus = function getStatus (toAddress, requested, callback) {
   return bitgo.blockchain().getAddressTransactions({address: toAddress})
   .then(function (rec) {
     var txs = rec.transactions
-    if (txs.length === 0) return callback(null, {status: 'not_seen'})
+    if (txs.length === 0) return {status: 'notSeen'}
 
-    var requested = rec.cryptoAtoms
-
-    return getWallet
+    return getWallet()
     .then(function (wallet) {
       var promises = txs.map(function (tx) {
         return wallet.getTransaction({id: tx.id})
+        .then(function (walletTx) {
+          return {
+            entries: tx.entries,
+            instant: walletTx.instant,
+            pending: tx.pending
+          }
+        })
       })
 
       return Promise.all(promises)
@@ -122,7 +126,7 @@ exports.getStatus = function getStatus (requestedTx, callback) {
             return _entry.account === toAddress
           })
 
-          if (!entry) return acc
+          if (!entry || entry.value <= 0) return acc
           var total = acc.total.plus(entry.value)
 
           var status = tx.instant
