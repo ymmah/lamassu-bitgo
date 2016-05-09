@@ -130,11 +130,11 @@ exports.getStatus = function getStatus (toAddress, requested, callback) {
           var total = acc.total.plus(entry.value)
 
           var status = tx.instant
-          ? 'authorized'
-          : tx.pending ? 'zeroConf' : 'confirmed'
+          ? 'instant'
+          : tx.pending ? 'authorized' : 'confirmed'
 
           return ({total: total, status: status})
-        }, {total: new BigNumber(0)})
+        }, {total: new BigNumber(0), status: 'notSeen'})
 
         if (reduction.total.lt(requested)) return {status: 'insufficientFunds'}
         return {status: reduction.status}
