@@ -96,7 +96,8 @@ function compareTxs (a, b) {
   return 0
 }
 
-exports.getStatus = function getStatus (toAddress, requested, callback) {
+// This new call uses promises. We're in the process of upgrading everything.
+exports.getStatus = function getStatus (toAddress, requested) {
   return bitgo.blockchain().getAddressTransactions({address: toAddress})
   .then(function (rec) {
     var txs = rec.transactions
@@ -141,5 +142,4 @@ exports.getStatus = function getStatus (toAddress, requested, callback) {
       })
     })
   })
-  .nodeify(callback)
 }
