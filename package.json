@@ -22,10 +22,9 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "bignumber.js": "^2.3.0",
-    "bitgo": "^1.5.4",
+    "bignumber.js": "^3.0.1",
+    "bitgo": "^2.0.4",
     "lamassu-config": "^0.4.4",
-    "lodash": "^2.4.1",
-    "promptly": "~0.2.0"
+    "lodash": "^4.17.2"
   }
 }

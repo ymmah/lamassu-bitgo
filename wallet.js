@@ -31,7 +31,7 @@ exports.config = function config (localConfig) {
   }
 }
 
-exports.sendBitcoins = function sendBitcoins (address, satoshis, fee, callback) {
+exports.sendCoins = function sendBitcoins (address, satoshis, fee, callback) {
   return getWallet()
     .then(function (wallet) {
       var params = {
