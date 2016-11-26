@@ -1,37 +1,25 @@
-const _ = require('lodash')
 const BitGo = require('bitgo')
 const pjson = require('./package.json')
 const userAgent = 'Lamassu-BitGo/' + pjson.version
 
 const NAME = 'BitGo'
-const SUPPORTED_MODULES = ['wallet']
 
-let bitgo
-const pluginConfig = {}
-
-function getWallet () {
-  return bitgo.wallets().get({ id: pluginConfig.walletId })
+function buildBitgo (account) {
+  return new BitGo.BitGo({accessToken: account.token, env: 'prod', userAgent: userAgent})
 }
 
-function config (localConfig) {
-  if (localConfig) {
-    _.merge(pluginConfig, localConfig)
-  }
-  if (pluginConfig.token && pluginConfig.walletId && pluginConfig.walletPassphrase) {
-    bitgo = new BitGo.BitGo({ accessToken: pluginConfig.token, env: 'prod', userAgent: userAgent })
-  } else {
-    throw new Error('BitGo config requires token and walletId')
-  }
+function getWallet (account) {
+  const bitgo = buildBitgo(account)
+  return bitgo.wallets().get({ id: account.walletId })
 }
 
-function sendCoins (address, satoshis, fee) {
-  return getWallet()
+function sendCoins (account, address, satoshis, fee) {
+  return getWallet(account)
   .then(wallet => {
     const params = {
       address: address,
       amount: satoshis,
-      // fee: fee,  // TODO: support fee in sendCoins
-      walletPassphrase: pluginConfig.walletPassphrase
+      walletPassphrase: account.walletPassphrase
     }
     return wallet.sendCoins(params)
   })
@@ -46,8 +34,8 @@ function sendCoins (address, satoshis, fee) {
   })
 }
 
-function balance () {
-  return getWallet()
+function balance (account) {
+  return getWallet(account)
   .then(wallet => {
     return {
       BTC: wallet.wallet.spendableConfirmedBalance
@@ -55,8 +43,8 @@ function balance () {
   })
 }
 
-function newAddress (info) {
-  return getWallet()
+function newAddress (account, info) {
+  return getWallet(account)
   .then(wallet => {
     return wallet.createAddress()
     .then(result => {
@@ -73,7 +61,8 @@ function newAddress (info) {
   })
 }
 
-function getStatus (toAddress, requested) {
+function getStatus (account, toAddress, requested) {
+  const bitgo = buildBitgo(account)
   return bitgo.blockchain().getAddress({address: toAddress})
   .then(rec => {
     if (rec.balance === 0) return {status: 'notSeen'}
@@ -85,8 +74,6 @@ function getStatus (toAddress, requested) {
 
 module.exports = {
   NAME,
-  SUPPORTED_MODULES,
-  config,
   balance,
   sendCoins,
   newAddress,
