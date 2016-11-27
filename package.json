@@ -18,13 +18,11 @@
     "url": "https://github.com/lamassu/lamassu-bitgo/issues"
   },
   "bin": {
-    "bitgo-setup": "./setup"
   },
   "devDependencies": {},
   "dependencies": {
     "bignumber.js": "^3.0.1",
     "bitgo": "^2.0.4",
-    "lamassu-config": "^0.4.4",
     "lodash": "^4.17.2"
   }
 }

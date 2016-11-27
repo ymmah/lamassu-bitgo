@@ -15,12 +15,21 @@ function getWallet (account) {
   return bitgo.wallets().get({ id: account.walletId })
 }
 
-function sendCoins (account, address, satoshis, fee) {
-  return getWallet(account)
+function checkCryptoCode (cryptoCode) {
+  if (cryptoCode !== 'BTC') {
+    return Promise.reject(new Error('Unsupported crypto: ' + cryptoCode))
+  }
+
+  return Promise.resolve()
+}
+
+function sendCoins (account, address, cryptoAtoms, cryptoCode) {
+  return checkCryptoCode(cryptoCode)
+  .then(() => getWallet(account))
   .then(wallet => {
     const params = {
       address: address,
-      amount: satoshis.toString(),
+      amount: cryptoAtoms.toString(),
       walletPassphrase: account.walletPassphrase
     }
     return wallet.sendCoins(params)
@@ -37,20 +46,14 @@ function sendCoins (account, address, satoshis, fee) {
 }
 
 function balance (account, cryptoCode) {
-  if (cryptoCode !== 'BTC') {
-    return Promise.reject(new Error('Unsupported crypto: ' + cryptoCode))
-  }
-
-  return getWallet(account)
+  return checkCryptoCode(cryptoCode)
+  .then(() => getWallet(account))
   .then(wallet => new BigNumber(wallet.wallet.spendableConfirmedBalance))
 }
 
 function newAddress (account, cryptoCode, info) {
-  if (cryptoCode !== 'BTC') {
-    return Promise.reject(new Error('Unsupported crypto: ' + cryptoCode))
-  }
-
-  return getWallet(account)
+  return checkCryptoCode(cryptoCode)
+  .then(() => getWallet(account))
   .then(wallet => {
     return wallet.createAddress()
     .then(result => {
@@ -67,9 +70,10 @@ function newAddress (account, cryptoCode, info) {
   })
 }
 
-function getStatus (account, toAddress, requested) {
+function getStatus (account, toAddress, requested, cryptoCode) {
   const bitgo = buildBitgo(account)
-  return bitgo.blockchain().getAddress({address: toAddress})
+  return checkCryptoCode(cryptoCode)
+  .then(() => bitgo.blockchain().getAddress({address: toAddress}))
   .then(rec => {
     if (rec.balance === 0) return {status: 'notSeen'}
     if (requested.gt(rec.balance)) return {status: 'insufficientFunds'}
