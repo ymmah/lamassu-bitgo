@@ -1,4 +1,6 @@
 const BitGo = require('bitgo')
+const BigNumber = require('bignumber.js')
+
 const pjson = require('./package.json')
 const userAgent = 'Lamassu-BitGo/' + pjson.version
 
@@ -18,7 +20,7 @@ function sendCoins (account, address, satoshis, fee) {
   .then(wallet => {
     const params = {
       address: address,
-      amount: satoshis,
+      amount: satoshis.toString(),
       walletPassphrase: account.walletPassphrase
     }
     return wallet.sendCoins(params)
@@ -38,12 +40,16 @@ function balance (account) {
   return getWallet(account)
   .then(wallet => {
     return {
-      BTC: wallet.wallet.spendableConfirmedBalance
+      BTC: new BigNumber(wallet.wallet.spendableConfirmedBalance)
     }
   })
 }
 
-function newAddress (account, info) {
+function newAddress (account, cryptoCode, info) {
+  if (cryptoCode !== 'BTC') {
+    return Promise.reject(new Error('Unsupported crypto: ' + cryptoCode))
+  }
+
   return getWallet(account)
   .then(wallet => {
     return wallet.createAddress()
@@ -66,8 +72,8 @@ function getStatus (account, toAddress, requested) {
   return bitgo.blockchain().getAddress({address: toAddress})
   .then(rec => {
     if (rec.balance === 0) return {status: 'notSeen'}
-    if (rec.balance < requested) return {status: 'insufficientFunds'}
-    if (rec.confirmedBalance < requested) return {status: 'authorized'}
+    if (requested.gt(rec.balance)) return {status: 'insufficientFunds'}
+    if (requested.gt(rec.confirmedBalance)) return {status: 'authorized'}
     return {status: 'confirmed'}
   })
 }
