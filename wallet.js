@@ -36,13 +36,13 @@ function sendCoins (account, address, satoshis, fee) {
   })
 }
 
-function balance (account) {
+function balance (account, cryptoCode) {
+  if (cryptoCode !== 'BTC') {
+    return Promise.reject(new Error('Unsupported crypto: ' + cryptoCode))
+  }
+
   return getWallet(account)
-  .then(wallet => {
-    return {
-      BTC: new BigNumber(wallet.wallet.spendableConfirmedBalance)
-    }
-  })
+  .then(wallet => new BigNumber(wallet.wallet.spendableConfirmedBalance))
 }
 
 function newAddress (account, cryptoCode, info) {
