@@ -29,7 +29,7 @@ function sendCoins (account, address, cryptoAtoms, cryptoCode) {
   .then(wallet => {
     const params = {
       address: address,
-      amount: cryptoAtoms.toString(),
+      amount: cryptoAtoms.toNumber(),
       walletPassphrase: account.walletPassphrase
     }
     return wallet.sendCoins(params)
