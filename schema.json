@@ -5,26 +5,23 @@
     {
       "code": "token",
       "display": "API token",
-      "fieldType": "string",
-      "secret": true,
+      "fieldType": "password",
       "required": true,
-      "value": ""
+      "value": false
     },
     {
       "code": "walletId",
       "display": "Wallet ID",
       "fieldType": "string",
-      "secret": false,
       "required": true,
       "value": ""
     },
     {
       "code": "walletPassphrase",
       "display": "Wallet passphrase",
-      "fieldType": "string",
-      "secret": true,
+      "fieldType": "password",
       "required": true,
-      "value": ""
+      "value": false
     }
   ]
 }
